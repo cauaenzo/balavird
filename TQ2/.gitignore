@@ -1,0 +1,23 @@
+# venv i env
+venv/
+env/
+ENV/
+.env
+
+# lixo
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# ide
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# SO e Outros
+Thumbs.db
+Desktop.ini
+.DS_Store
