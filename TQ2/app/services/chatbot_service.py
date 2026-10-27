@@ -4,39 +4,49 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
-# Carrega as variáveis do .env
 load_dotenv()
+
+api_key = os.getenv("OPENAI_API_KEY")
+base_url = os.getenv(
+    "OPENAI_BASE_URL",
+    "https://api.openai.com/v1",
+)
+model_name = os.getenv("MODEL_NAME", "gpt-4o-mini")
+
+if not api_key:
+    raise RuntimeError(
+        "A variável OPENAI_API_KEY não foi configurada."
+    )
+
+# Inicializa os componentes uma única vez.
+llm = ChatOpenAI(
+    model=model_name,
+    temperature=0.7,
+    api_key=api_key,
+    base_url=base_url,
+    timeout=30,
+    max_retries=2,
+)
+
+prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        (
+            "Você é um assistente especialista em programação Python. "
+            "Responda em português com explicações claras e precisas. "
+            "Quando relevante, apresente exemplos de código executáveis, "
+            "explique decisões técnicas e destaque possíveis limitações. "
+            "Se não souber algo, deixe isso claro."
+        ),
+    ),
+    ("human", "{pergunta}"),
+])
+
+chain = prompt | llm | StrOutputParser()
 
 
 def gerar_resposta_chatbot(pergunta: str) -> str:
-  # Inicializa o ChatOpenAI de forma modular.
-  # Se o .env tiver a base_url do roteador, ele aponta para lá.
-  # Se não tiver, ele usa o padrão da OpenAI oficial.
-  llm = ChatOpenAI(
-      model=os.getenv("MODEL_NAME", "gpt-4o-mini"),
-      temperature=0.7,
-      openai_api_key=os.getenv("OPENAI_API_KEY"),
-      openai_api_base=os.getenv(
-          "OPENAI_BASE_URL", "https://api.openai.com/v1"
-      ),
-  )
+    if not pergunta or not pergunta.strip():
+        raise ValueError("A pergunta não pode estar vazia.")
 
-  # Define o prompt estruturado
-  prompt = ChatPromptTemplate.from_messages([
-      (
-          "system",
-          (
-              "Você é um assistente especialista em programação Python. "
-              "Responda às perguntas dos usuários com explicações detalhadas, "
-              "claras e exemplos de código quando aplicável."
-          ),
-      ),
-      ("human", "{pergunta}"),
-  ])
-
-  # Cria a cadeia (Chain) usando o LCEL do LangChain
-  chain = prompt | llm | StrOutputParser()
-
-  # Executa a cadeia
-  resposta = chain.invoke({"pergunta": pergunta})
-  return resposta
+    return chain.invoke({"pergunta": pergunta.strip()})
