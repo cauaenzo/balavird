@@ -1,52 +1,37 @@
-import os
-from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
-load_dotenv()
+from app.config import MODEL_NAME, OPENAI_API_KEY, OPENAI_BASE_URL
 
-api_key = os.getenv("OPENAI_API_KEY")
-base_url = os.getenv(
-    "OPENAI_BASE_URL",
-    "https://api.openai.com/v1",
-)
-model_name = os.getenv("MODEL_NAME", "gpt-4o-mini")
-
-if not api_key:
-    raise RuntimeError(
-        "A variável OPENAI_API_KEY não foi configurada."
-    )
-
-# Inicializa os componentes uma única vez.
-llm = ChatOpenAI(
-    model=model_name,
+_llm = ChatOpenAI(
+    model=MODEL_NAME,
     temperature=0.7,
-    api_key=api_key,
-    base_url=base_url,
+    api_key=OPENAI_API_KEY,
+    base_url=OPENAI_BASE_URL,
     timeout=30,
     max_retries=2,
 )
 
-prompt = ChatPromptTemplate.from_messages([
+_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         (
-            "Você é um assistente especialista em programação Python. "
-            "Responda em português com explicações claras e precisas. "
-            "Quando relevante, apresente exemplos de código executáveis, "
-            "explique decisões técnicas e destaque possíveis limitações. "
-            "Se não souber algo, deixe isso claro."
+            "Voce e um assistente especialista em programacao Python. "
+            "Responda em portugues com explicacoes claras e precisas. "
+            "Quando relevante, apresente exemplos de codigo executaveis, "
+            "explique decisoes tecnicas e destaque possiveis limitacoes. "
+            "Se nao souber algo, deixe isso claro."
         ),
     ),
     ("human", "{pergunta}"),
 ])
 
-chain = prompt | llm | StrOutputParser()
+# Chain montada uma vez; reutilizada em todas as requisicoes
+_chain = _prompt | _llm | StrOutputParser()
 
 
 def gerar_resposta_chatbot(pergunta: str) -> str:
     if not pergunta or not pergunta.strip():
-        raise ValueError("A pergunta não pode estar vazia.")
-
-    return chain.invoke({"pergunta": pergunta.strip()})
+        raise ValueError("A pergunta nao pode estar vazia.")
+    return _chain.invoke({"pergunta": pergunta.strip()})
