@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Variáveis de ambiente
+.env
+
+# Vector Store (gerado pelo indexer)
+vector_store/
+
+# Modelos baixados pelo sentence-transformers
+.cache/
+models/
+
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Pytest
+.pytest_cache/
+pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
