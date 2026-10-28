@@ -1,36 +1,69 @@
-# Desafio 1 - API de Biblioteca Virtual (FastAPI)
+# TQ1 - API de Biblioteca Virtual (FastAPI)
 
-API desenvolvida com FastAPI, SQLite, SQLAlchemy e Pydantic V2 para gerenciamento e consulta de livros.
+API REST para cadastro e consulta de livros, construida com FastAPI, SQLAlchemy e Pydantic v2. Persiste os dados em SQLite local.
+
+## Estrutura
+
+```
+TQ1/
+├── app/
+│   ├── config.py      # Variaveis de configuracao centralizadas
+│   ├── database.py    # Engine, sessao e dependencia get_db
+│   ├── models.py      # Modelo ORM LivroModel
+│   ├── schemas.py     # Schemas Pydantic de entrada e saida
+│   └── main.py        # Endpoints FastAPI
+├── tests/
+│   └── test_main.py   # Testes isolados com banco em memoria
+└── requirements.txt
+```
 
 ## Como Executar
 
-1. Crie e ative um ambiente virtual (`venv`):
+1. Crie e ative o ambiente virtual:
+
    ```bash
    python -m venv venv
    ```
-2. Ativação do ambiente virtual:
+
    ```bash
-   # Windows:
+   # Windows
    venv\Scripts\activate
-   ```
-   ```bash
-   # Linux:
+
+   # Linux / macOS
    source venv/bin/activate
    ```
-3. Instalação das dependências:
+
+2. Instale as dependencias:
+
    ```bash
    pip install -r requirements.txt
    ```
-4. Execute o servidor FastAPI:
+
+3. Inicie o servidor:
+
    ```bash
-   uvicorn main:app --reload
+   uvicorn app.main:app --reload
    ```
 
-5. Execute os testes unitários:
+4. Execute os testes:
+
    ```bash
    pytest -v
    ```
 
-6. Acesse a documentação interativa da API
-   - Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-   - ReDoc: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/redoc)
+5. Acesse a documentacao interativa:
+   - Swagger UI: http://127.0.0.1:8000/docs
+   - ReDoc: http://127.0.0.1:8000/redoc
+
+## Endpoints
+
+| Metodo | Rota              | Descricao                        |
+|--------|-------------------|----------------------------------|
+| POST   | `/livros/`        | Cadastra um novo livro           |
+| GET    | `/livros/`        | Lista livros com filtro opcional |
+| GET    | `/livros/{id}`    | Busca livro por ID               |
+
+## Observacoes
+
+- O banco de dados `biblioteca.db` e criado automaticamente na raiz do projeto na primeira execucao.
+- Os testes usam banco SQLite em memoria e sao completamente isolados entre si.
